@@ -27,13 +27,13 @@ import javancss.Javancss;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.impl.ExtensibleURIConverterImpl;
-import org.emftext.language.java.test.bulk.GiganticTest;
+import org.emftext.language.java.test.bulk.AbstractZipFileInputTestCase;
 
 /**
  * A utility class to extract statistical information from the test
  * sources (e.g., the total number of lines of code).
  */
-public class TestStatistics extends GiganticTest {
+public class TestStatistics extends AbstractZipFileInputTestCase {
 	
 	private long locs = 0;
 	private long ncss = 0;
