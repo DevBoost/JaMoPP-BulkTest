@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006-2012
+ * Copyright (c) 2006-2014
  * Software Technology Group, Dresden University of Technology
  * DevBoost GmbH, Berlin, Amtsgericht Charlottenburg, HRB 140026
  * 
@@ -31,8 +31,7 @@ import org.emftext.language.java.resource.java.IJavaOptions;
 import org.emftext.language.java.test.AbstractJavaParserTestCase;
 
 /**
- * A test that can be used to parse and print entries in a 
- * ZIP file.
+ * A test that can be used to parse and print entries in a ZIP file.
  */
 public class ZipFileEntryTestCase extends AbstractJavaParserTestCase {
 
@@ -42,18 +41,19 @@ public class ZipFileEntryTestCase extends AbstractJavaParserTestCase {
 	private final boolean prefixUsedInZipFile;
 
 	/**
-	 * Creates a new test for the given entry in a ZIP file. If a resource set is given
-	 * it will be used. Otherwise a new one will be created.
+	 * Creates a new test for the given entry in a ZIP file. If a resource set
+	 * is given it will be used. Otherwise a new one will be created.
 	 * 
 	 * @param zipFile
 	 * @param entry
 	 * @param excludeFromReprint
-	 * @param prefixUsedInZipFile 
+	 * @param prefixUsedInZipFile
 	 * @param resourceSet
 	 */
 	public ZipFileEntryTestCase(ZipFile zipFile, ZipEntry entry, boolean excludeFromReprint,
 			boolean prefixUsedInZipFile) {
-		super("Parse " + (excludeFromReprint ? "" : "and reprint: ") + entry.getName());
+		super();
+		//super("Parse " + (excludeFromReprint ? "" : "and reprint: ") + entry.getName());
 		this.zipFile = zipFile;
 		this.excludeFromReprint = excludeFromReprint;
 		//addZipEntry(entry);
