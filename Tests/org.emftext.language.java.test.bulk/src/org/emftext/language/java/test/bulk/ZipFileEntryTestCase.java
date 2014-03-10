@@ -69,7 +69,7 @@ public class ZipFileEntryTestCase extends AbstractJavaParserTestCase {
 	
 	public void runTest() {
 		try {
-			if(isExcludedFromReprintTest(zipFile.getName())) {
+			if (isExcludedFromReprintTest(zipFile.getName())) {
 				parseAllEntries();
 			}
 			else {
