@@ -1,6 +1,9 @@
 // BuildBoost Extensions
 git:https://github.com/DevBoost/BuildBoost.git!Extensions/JUnit/
 
+// EMFText (Update site created by latest successful build)
+dynamicfile:http://www.emftext.org/update_trunk/org.emftext.deploy-complete.zip
+
 // JaMoPP (Update site created by latest successful build)
 dynamicfile:http://www.jamopp.org/update_trunk/org.jamopp.deploy-complete.zip
 
