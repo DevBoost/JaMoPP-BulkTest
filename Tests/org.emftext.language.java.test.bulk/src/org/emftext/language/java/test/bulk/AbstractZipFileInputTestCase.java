@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006-2012
+ * Copyright (c) 2006-2014
  * Software Technology Group, Dresden University of Technology
  * DevBoost GmbH, Berlin, Amtsgericht Charlottenburg, HRB 140026
  * 
@@ -14,6 +14,8 @@
  *      - initial API and implementation
  ******************************************************************************/
 package org.emftext.language.java.test.bulk;
+
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,9 +38,45 @@ import org.emftext.language.java.test.AbstractJavaParserTestCase;
 import org.emftext.language.java.test.util.ThreadedSuite;
 
 /**
- * An abstract super class for test that must read input from ZIP files.
+ * An abstract super class for tests that read input from ZIP files.
  */
 public abstract class AbstractZipFileInputTestCase extends AbstractJavaParserTestCase {
+
+	private static class DelegatingTestCase extends TestCase {
+		
+		private final ZipFileEntryTestCase zipFileEntryTestCase;
+
+		private DelegatingTestCase(ZipFileEntryTestCase zipFileEntryTestCase) {
+			super("Parse " + (zipFileEntryTestCase.isExcludeFromReprint() ? "" : "and reprint: ") + zipFileEntryTestCase.getZipEntry().getName());
+			this.zipFileEntryTestCase = zipFileEntryTestCase;
+		}
+
+		@Override
+		protected void runTest() throws Throwable {
+			zipFileEntryTestCase.runTest();
+		}
+	}
+
+	private static class CustomClasspathInitializer implements
+			JavaClasspath.Initializer {
+		
+		private final boolean requiresStdLib;
+		
+		public CustomClasspathInitializer(boolean requiresStdLib) {
+			super();
+			this.requiresStdLib = requiresStdLib;
+		}
+
+		public boolean requiresStdLib() {
+			return requiresStdLib;
+		}
+
+		public boolean requiresLocalClasspath() {
+			return true;
+		}
+
+		public void initialize(Resource resource) { }
+	}
 
 	protected final static String BULK_INPUT_DIR = "input/";
 
@@ -107,7 +145,7 @@ public abstract class AbstractZipFileInputTestCase extends AbstractJavaParserTes
 		}
 
 		if (!srcZipExists) {
-			System.err.println("src.zip not found in folder '" + testFolderName + "'.");
+			fail("src.zip not found in folder '" + testFolderName + "'.");
 		}
 
 		return result;
@@ -139,36 +177,18 @@ public abstract class AbstractZipFileInputTestCase extends AbstractJavaParserTes
 		Enumeration<? extends ZipEntry> entries = zipFile.entries();
 
 		if (!prefixUsedInZipFile) {
-			//reuse global classpath
-			JavaClasspath.getInitializers().add(new JavaClasspath.Initializer() {			
-				public boolean requiresStdLib() {
-					return false;
-				}
-				
-				public boolean requiresLocalClasspath() {
-					return true;
-				}
-				
-				public void initialize(Resource resource) { }
-			});
+			// Reuse global classpath
+			boolean requiresStdLib = false;
+			JavaClasspath.getInitializers().add(new CustomClasspathInitializer(requiresStdLib));
 			JavaClasspath globalCP = JavaClasspath.get();
 			String plainZipFileName = zipFile.getName().substring(AbstractZipFileInputTestCase.BULK_INPUT_DIR.length());
 			plainZipFileName = plainZipFileName.substring(0, plainZipFileName.length() - File.separator.length() - "src.zip".length());
 			registerLibs("input/" + plainZipFileName, globalCP, "");
 		} else {
-			//for the JDT test file register only the std. lib
-			JavaClasspath.getInitializers().add(new JavaClasspath.Initializer() {			
-				public boolean requiresStdLib() {
-					return true;
-				}
-				
-				public boolean requiresLocalClasspath() {
-					return true;
-				}
-				
-				public void initialize(Resource resource) { }
-			});
-			//trigger init
+			// For the JDT test file register only the standard library
+			boolean requiresStdLib = true;
+			JavaClasspath.getInitializers().add(new CustomClasspathInitializer(requiresStdLib));
+			// Trigger initialization
 			JavaClasspath.get();
 		}
 
@@ -190,13 +210,7 @@ public abstract class AbstractZipFileInputTestCase extends AbstractJavaParserTes
 			}
 			if (entryName.endsWith(".java")) {
 				final ZipFileEntryTestCase newTest = new ZipFileEntryTestCase(zipFile, entry, excludeFromReprint, prefixUsedInZipFile);
-				tests.add(new TestCase() {
-					
-					@Override
-					protected void runTest() throws Throwable {
-						newTest.runTest();
-					}
-				});
+				tests.add(new DelegatingTestCase(newTest));
 			}
 		}
 		return tests;

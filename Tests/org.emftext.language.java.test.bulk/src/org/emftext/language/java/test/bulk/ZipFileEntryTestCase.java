@@ -15,11 +15,11 @@
  ******************************************************************************/
 package org.emftext.language.java.test.bulk;
 
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -31,40 +31,30 @@ import org.emftext.language.java.resource.java.IJavaOptions;
 import org.emftext.language.java.test.AbstractJavaParserTestCase;
 
 /**
- * A test that can be used to parse and print entries in a ZIP file.
+ * A test that can be used to parse and print an entry from a ZIP file.
  */
 public class ZipFileEntryTestCase extends AbstractJavaParserTestCase {
 
 	private final ZipFile zipFile;
-	private final List<ZipEntry> entries = new ArrayList<ZipEntry>();
+	private final ZipEntry zipEntry;
 	private final boolean excludeFromReprint;
 	private final boolean prefixUsedInZipFile;
 
 	/**
-	 * Creates a new test for the given entry in a ZIP file. If a resource set
-	 * is given it will be used. Otherwise a new one will be created.
+	 * Creates a new test for the given entry in a ZIP file.
 	 * 
 	 * @param zipFile
-	 * @param entry
+	 * @param zipEntry
 	 * @param excludeFromReprint
 	 * @param prefixUsedInZipFile
-	 * @param resourceSet
 	 */
-	public ZipFileEntryTestCase(ZipFile zipFile, ZipEntry entry, boolean excludeFromReprint,
-			boolean prefixUsedInZipFile) {
+	public ZipFileEntryTestCase(ZipFile zipFile, ZipEntry zipEntry,
+			boolean excludeFromReprint, boolean prefixUsedInZipFile) {
 		super();
-		//super("Parse " + (excludeFromReprint ? "" : "and reprint: ") + entry.getName());
 		this.zipFile = zipFile;
 		this.excludeFromReprint = excludeFromReprint;
-		//addZipEntry(entry);
 		this.prefixUsedInZipFile = prefixUsedInZipFile;
-		
-		entries.add(entry);
-	}
-	
-	public void addZipEntry(ZipEntry entry) {
-		System.out.println(hashCode() + " addZipEntry() " + entry.getName());
-		entries.add(entry);
+		this.zipEntry = zipEntry;
 	}
 	
 	public void runTest() {
@@ -73,22 +63,24 @@ public class ZipFileEntryTestCase extends AbstractJavaParserTestCase {
 				parseAllEntries();
 			}
 			else {
+				/*
 				// if there is more entries that must be printed
 				// together we have to parse them before
 				if (entries.size() > 1) {
 					parseAllEntries();
 				}
+				*/
 				parseAndReprintAllEntries();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			org.junit.Assert.fail(e.getClass() + ": " + e.getMessage());
+			fail(e.getClass() + ": " + e.getMessage());
 		}
 	}
 	
 	@Override
 	protected Map<Object, Object> getLoadOptions() {
-		Map<Object, Object> map = new HashMap<Object, Object>();
+		Map<Object, Object> map = new LinkedHashMap<Object, Object>();
 		map.put(JavaClasspath.OPTION_USE_LOCAL_CLASSPATH, Boolean.TRUE);
 		map.put(JavaClasspath.OPTION_REGISTER_STD_LIB, Boolean.FALSE);
 		map.put(IJavaOptions.DISABLE_LOCATION_MAP, Boolean.TRUE);
@@ -110,15 +102,11 @@ public class ZipFileEntryTestCase extends AbstractJavaParserTestCase {
 	}
 
 	private void parseAllEntries() throws IOException {
-		for (ZipEntry entry : entries) {
-			parseResource(zipFile, entry);
-		}
+		parseResource(zipFile, zipEntry);
 	}
 
 	private void parseAndReprintAllEntries() throws Exception {
-		for (ZipEntry entry : entries) {
-			parseAndReprintEntry(entry);
-		}
+		parseAndReprintEntry(zipEntry);
 	}
 	
 	@Override
@@ -149,5 +137,13 @@ public class ZipFileEntryTestCase extends AbstractJavaParserTestCase {
 	@Override
 	public void addReprintedResource(File file) {
 		// do nothing to avoid storing unneeded file objects in memory
+	}
+
+	public boolean isExcludeFromReprint() {
+		return excludeFromReprint;
+	}
+
+	public ZipEntry getZipEntry() {
+		return zipEntry;
 	}
 }
