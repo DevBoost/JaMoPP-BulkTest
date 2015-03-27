@@ -43,11 +43,12 @@ import org.emftext.language.java.test.util.ThreadedSuite;
 public abstract class AbstractZipFileInputTestCase extends AbstractJavaParserTestCase {
 
 	private static class DelegatingTestCase extends TestCase {
-		
+
 		private final ZipFileEntryTestCase zipFileEntryTestCase;
 
 		private DelegatingTestCase(ZipFileEntryTestCase zipFileEntryTestCase) {
-			super("Parse " + (zipFileEntryTestCase.isExcludeFromReprint() ? "" : "and reprint: ") + zipFileEntryTestCase.getZipEntry().getName());
+			super("Parse " + (zipFileEntryTestCase.isExcludeFromReprint() ? "" : "and reprint: ")
+					+ zipFileEntryTestCase.getZipEntry().getName());
 			this.zipFileEntryTestCase = zipFileEntryTestCase;
 		}
 
@@ -57,11 +58,10 @@ public abstract class AbstractZipFileInputTestCase extends AbstractJavaParserTes
 		}
 	}
 
-	private static class CustomClasspathInitializer implements
-			JavaClasspath.Initializer {
-		
+	private static class CustomClasspathInitializer implements JavaClasspath.Initializer {
+
 		private final boolean requiresStdLib;
-		
+
 		public CustomClasspathInitializer(boolean requiresStdLib) {
 			super();
 			this.requiresStdLib = requiresStdLib;
@@ -75,7 +75,8 @@ public abstract class AbstractZipFileInputTestCase extends AbstractJavaParserTes
 			return true;
 		}
 
-		public void initialize(Resource resource) { }
+		public void initialize(Resource resource) {
+		}
 	}
 
 	protected final static String BULK_INPUT_DIR = "input/";
@@ -90,36 +91,35 @@ public abstract class AbstractZipFileInputTestCase extends AbstractJavaParserTes
 	 * @param threadNumber
 	 *            number of threads to use
 	 */
-	protected static Test constructSuite(String testFolderName,
-			String startEntryName, int threadNumber) throws CoreException,
-			IOException {
-		return constructSuite(testFolderName, startEntryName, threadNumber,
-				new String[] {}, false);
-	}
-
-	protected static Test constructSuite(String testFolderName,
-			String startEntryName, int threadNumber, String[] excludedTests)
+	protected static Test constructSuite(String testFolderName, String startEntryName, int threadNumber)
 			throws CoreException, IOException {
-		
-		return constructSuite(testFolderName, startEntryName, threadNumber,
-				excludedTests, false);
+		return constructSuite(testFolderName, startEntryName, threadNumber, new String[] {}, false);
 	}
 
-	protected static Test constructSuite(String testFolderName,
-			String startEntryName, int threadNumber, String[] excludedTests,
-			boolean prefixUsedInZipFile) throws CoreException, IOException {
-		
-		// run with 'threadNumber' threads and wait for maximal 50 minutes
-		TestSuite suite = new ThreadedSuite("Suite testing all files.", 50 * 60 * 1000, threadNumber);
+	protected static Test constructSuite(String testFolderName, String startEntryName, int threadNumber,
+			String[] excludedTests) throws CoreException, IOException {
 
+		return constructSuite(testFolderName, startEntryName, threadNumber, excludedTests, false);
+	}
+
+	protected static Test constructSuite(String testFolderName, String startEntryName, int threadNumber,
+			String[] excludedTests, boolean prefixUsedInZipFile) throws CoreException, IOException {
+
+		// FIXME for more determinism we temporarily deactivate multi-threading here.
+		threadNumber = 1;
+
+		// run with 'threadNumber' threads and wait for maximal 50 minutes
+		TestSuite suite = null;
+		String suiteName = "Suite testing all files.";
+		if (threadNumber == 1) {
+			suite = new TestSuite(suiteName);
+		} else {
+			suite = new ThreadedSuite(suiteName, 50 * 60 * 1000, threadNumber);
+		}
 		List<String> inputZips = getInputZips(testFolderName);
 		for (String inputZip : inputZips) {
-			addToTestSuite(suite, getTestsForZipFileEntries(
-					inputZip,
-					false,
-					startEntryName,
-					excludedTests,
-					prefixUsedInZipFile));
+			addToTestSuite(suite,
+					getTestsForZipFileEntries(inputZip, false, startEntryName, excludedTests, prefixUsedInZipFile));
 		}
 		return suite;
 	}
@@ -132,12 +132,10 @@ public abstract class AbstractZipFileInputTestCase extends AbstractJavaParserTes
 		boolean srcZipExists = false;
 		for (File folder : folders) {
 			if (folder.isDirectory()) {
-				for (File srcZipFile: folder.listFiles()) {
+				for (File srcZipFile : folder.listFiles()) {
 					if (srcZipFile.getName().equals("src.zip") && folder.getName().endsWith(testFolderName)) {
 						System.out.println("TheTest.getInputZips() " + folder);
-						result.add(BULK_INPUT_DIR + folder.getName() +
-								File.separator +
-								srcZipFile.getName());
+						result.add(BULK_INPUT_DIR + folder.getName() + File.separator + srcZipFile.getName());
 						srcZipExists = true;
 					}
 				}
@@ -159,19 +157,15 @@ public abstract class AbstractZipFileInputTestCase extends AbstractJavaParserTes
 		return null;
 	}
 
-	protected static Collection<Test> getTestsForZipFileEntries(
-			String zipFilePath, boolean excludeFromReprint,
+	protected static Collection<Test> getTestsForZipFileEntries(String zipFilePath, boolean excludeFromReprint,
 			boolean prefixUsedInZipFile) throws IOException, CoreException {
-		
-		return getTestsForZipFileEntries(zipFilePath, excludeFromReprint, null,
-				new String[] {}, prefixUsedInZipFile);
+
+		return getTestsForZipFileEntries(zipFilePath, excludeFromReprint, null, new String[] {}, prefixUsedInZipFile);
 	}
 
-	protected static Collection<Test> getTestsForZipFileEntries(
-			String zipFilePath, boolean excludeFromReprint, String startEntry,
-			String[] excludedTests, boolean prefixUsedInZipFile)
-			throws IOException, CoreException {
-		
+	protected static Collection<Test> getTestsForZipFileEntries(String zipFilePath, boolean excludeFromReprint,
+			String startEntry, String[] excludedTests, boolean prefixUsedInZipFile) throws IOException, CoreException {
+
 		Collection<Test> tests = new ArrayList<Test>();
 		final ZipFile zipFile = new ZipFile(zipFilePath);
 		Enumeration<? extends ZipEntry> entries = zipFile.entries();
@@ -182,7 +176,8 @@ public abstract class AbstractZipFileInputTestCase extends AbstractJavaParserTes
 			JavaClasspath.getInitializers().add(new CustomClasspathInitializer(requiresStdLib));
 			JavaClasspath globalCP = JavaClasspath.get();
 			String plainZipFileName = zipFile.getName().substring(AbstractZipFileInputTestCase.BULK_INPUT_DIR.length());
-			plainZipFileName = plainZipFileName.substring(0, plainZipFileName.length() - File.separator.length() - "src.zip".length());
+			plainZipFileName = plainZipFileName.substring(0, plainZipFileName.length() - File.separator.length()
+					- "src.zip".length());
 			registerLibs("input/" + plainZipFileName, globalCP, "");
 		} else {
 			// For the JDT test file register only the standard library
@@ -192,15 +187,13 @@ public abstract class AbstractZipFileInputTestCase extends AbstractJavaParserTes
 			JavaClasspath.get();
 		}
 
-
 		mainLoop: while (entries.hasMoreElements()) {
 
 			ZipEntry entry = entries.nextElement();
 			String entryName = entry.getName();
 			if (startEntry != null && !entryName.endsWith(startEntry)) {
 				continue mainLoop;
-			}
-			else {
+			} else {
 				startEntry = null;
 			}
 			for (String excludedTest : excludedTests) {
@@ -209,7 +202,8 @@ public abstract class AbstractZipFileInputTestCase extends AbstractJavaParserTes
 				}
 			}
 			if (entryName.endsWith(".java")) {
-				final ZipFileEntryTestCase newTest = new ZipFileEntryTestCase(zipFile, entry, excludeFromReprint, prefixUsedInZipFile);
+				final ZipFileEntryTestCase newTest = new ZipFileEntryTestCase(zipFile, entry, excludeFromReprint,
+						prefixUsedInZipFile);
 				tests.add(new DelegatingTestCase(newTest));
 			}
 		}
@@ -223,15 +217,15 @@ public abstract class AbstractZipFileInputTestCase extends AbstractJavaParserTes
 		while (entries.hasMoreElements()) {
 			ZipEntry entry = entries.nextElement();
 			if (entry.getName().endsWith(".java")) {
-				URI sourceURI = URI.createURI("archive:file:///" + new File(".").getAbsoluteFile().toURI().getRawPath() + zipFile.getName().replaceAll("\\\\", "/") + "!/" + entry.getName());
+				URI sourceURI = URI.createURI("archive:file:///" + new File(".").getAbsoluteFile().toURI().getRawPath()
+						+ zipFile.getName().replaceAll("\\\\", "/") + "!/" + entry.getName());
 				streams.add(sourceURI);
 			}
 		}
 		return streams;
 	}
 
-	protected static void addToTestSuite(TestSuite suite, Collection<Test> tests)
-			throws IOException {
+	protected static void addToTestSuite(TestSuite suite, Collection<Test> tests) throws IOException {
 		for (Test test : tests) {
 			suite.addTest(test);
 		}
