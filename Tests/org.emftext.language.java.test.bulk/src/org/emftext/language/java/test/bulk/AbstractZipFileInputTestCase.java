@@ -27,12 +27,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.emftext.language.java.JavaClasspath;
 import org.emftext.language.java.test.AbstractJavaParserTestCase;
 import org.emftext.language.java.test.util.ThreadedSuite;
@@ -41,43 +39,6 @@ import org.emftext.language.java.test.util.ThreadedSuite;
  * An abstract super class for tests that read input from ZIP files.
  */
 public abstract class AbstractZipFileInputTestCase extends AbstractJavaParserTestCase {
-
-	private static class DelegatingTestCase extends TestCase {
-
-		private final ZipFileEntryTestCase zipFileEntryTestCase;
-
-		private DelegatingTestCase(ZipFileEntryTestCase zipFileEntryTestCase) {
-			super("Parse " + (zipFileEntryTestCase.isExcludeFromReprint() ? "" : "and reprint: ")
-					+ zipFileEntryTestCase.getZipEntry().getName());
-			this.zipFileEntryTestCase = zipFileEntryTestCase;
-		}
-
-		@Override
-		protected void runTest() throws Throwable {
-			zipFileEntryTestCase.runTest();
-		}
-	}
-
-	private static class CustomClasspathInitializer implements JavaClasspath.Initializer {
-
-		private final boolean requiresStdLib;
-
-		public CustomClasspathInitializer(boolean requiresStdLib) {
-			super();
-			this.requiresStdLib = requiresStdLib;
-		}
-
-		public boolean requiresStdLib() {
-			return requiresStdLib;
-		}
-
-		public boolean requiresLocalClasspath() {
-			return true;
-		}
-
-		public void initialize(Resource resource) {
-		}
-	}
 
 	protected final static String BULK_INPUT_DIR = "input/";
 
@@ -170,15 +131,9 @@ public abstract class AbstractZipFileInputTestCase extends AbstractJavaParserTes
 		final ZipFile zipFile = new ZipFile(zipFilePath);
 		Enumeration<? extends ZipEntry> entries = zipFile.entries();
 
+		IClasspathSetter classpathSetter = null;
 		if (!prefixUsedInZipFile) {
-			// Reuse global classpath
-			boolean requiresStdLib = false;
-			JavaClasspath.getInitializers().add(new CustomClasspathInitializer(requiresStdLib));
-			JavaClasspath globalCP = JavaClasspath.get();
-			String plainZipFileName = zipFile.getName().substring(AbstractZipFileInputTestCase.BULK_INPUT_DIR.length());
-			plainZipFileName = plainZipFileName.substring(0, plainZipFileName.length() - File.separator.length()
-					- "src.zip".length());
-			registerLibs("input/" + plainZipFileName, globalCP, "");
+			classpathSetter = new ZipFileClasspathSetter(zipFile);
 		} else {
 			// For the JDT test file register only the standard library
 			boolean requiresStdLib = true;
@@ -203,7 +158,7 @@ public abstract class AbstractZipFileInputTestCase extends AbstractJavaParserTes
 			}
 			if (entryName.endsWith(".java")) {
 				final ZipFileEntryTestCase newTest = new ZipFileEntryTestCase(zipFile, entry, excludeFromReprint,
-						prefixUsedInZipFile);
+						prefixUsedInZipFile, classpathSetter);
 				tests.add(new DelegatingTestCase(newTest));
 			}
 		}

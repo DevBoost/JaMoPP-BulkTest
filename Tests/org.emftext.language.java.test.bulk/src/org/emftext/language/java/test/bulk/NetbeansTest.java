@@ -22,8 +22,7 @@ import junit.framework.Test;
 import org.eclipse.core.runtime.CoreException;
 
 /**
- * Uses JaMoPP to parse and print the source files of
- * the Netbeans IDE.
+ * Uses JaMoPP to parse and print the source files of the Netbeans IDE.
  */
 public class NetbeansTest extends AbstractZipFileInputTestCase {
 
@@ -47,6 +46,5 @@ public class NetbeansTest extends AbstractZipFileInputTestCase {
 	
 	public static Test suite() throws CoreException, IOException {
 		return constructSuite(TEST_FOLDER, START_ENTRY, THREAD_NO, EXCLUDED_TESTS);
-	}
-	
+	}	
 }

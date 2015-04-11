@@ -18,14 +18,12 @@ package org.emftext.language.java.test.bulk;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.emftext.language.java.JavaClasspath;
 import org.emftext.language.java.resource.java.IJavaOptions;
 import org.emftext.language.java.test.AbstractJavaParserTestCase;
@@ -39,6 +37,7 @@ public class ZipFileEntryTestCase extends AbstractJavaParserTestCase {
 	private final ZipEntry zipEntry;
 	private final boolean excludeFromReprint;
 	private final boolean prefixUsedInZipFile;
+	private final IClasspathSetter classpathSetter;
 
 	/**
 	 * Creates a new test for the given entry in a ZIP file.
@@ -48,13 +47,13 @@ public class ZipFileEntryTestCase extends AbstractJavaParserTestCase {
 	 * @param excludeFromReprint
 	 * @param prefixUsedInZipFile
 	 */
-	public ZipFileEntryTestCase(ZipFile zipFile, ZipEntry zipEntry,
-			boolean excludeFromReprint, boolean prefixUsedInZipFile) {
-		super();
+	public ZipFileEntryTestCase(ZipFile zipFile, ZipEntry zipEntry, boolean excludeFromReprint,
+			boolean prefixUsedInZipFile, IClasspathSetter classpathSetter) {
 		this.zipFile = zipFile;
 		this.excludeFromReprint = excludeFromReprint;
 		this.prefixUsedInZipFile = prefixUsedInZipFile;
 		this.zipEntry = zipEntry;
+		this.classpathSetter = classpathSetter;
 	}
 	
 	public void runTest() {
@@ -88,12 +87,13 @@ public class ZipFileEntryTestCase extends AbstractJavaParserTestCase {
 		return map;
 	}
 	
-	protected ResourceSet getResourceSet() {
-		ResourceSet rs = new ResourceSetImpl();
-		rs.getLoadOptions().putAll(getLoadOptions());
-		return rs;
+	protected void setUpClasspath(ResourceSet resourceSet) throws Exception {
+		// Sub class can override this method
+		if (classpathSetter != null) {
+			classpathSetter.setUpClasspath(resourceSet);
+		}
 	}
-	
+
 	private void parseAndReprintEntry(ZipEntry entry) throws Exception {
 		String plainZipFileName = zipFile.getName().substring(AbstractZipFileInputTestCase.BULK_INPUT_DIR.length());
 		plainZipFileName = plainZipFileName.substring(0, plainZipFileName.length() - File.separator.length() - "src.zip".length());
@@ -101,7 +101,7 @@ public class ZipFileEntryTestCase extends AbstractJavaParserTestCase {
 		parseAndReprint(zipFile, entry, "output/" + plainZipFileName, "input/" + plainZipFileName);
 	}
 
-	private void parseAllEntries() throws IOException {
+	private void parseAllEntries() throws Exception {
 		parseResource(zipFile, zipEntry);
 	}
 
@@ -145,5 +145,9 @@ public class ZipFileEntryTestCase extends AbstractJavaParserTestCase {
 
 	public ZipEntry getZipEntry() {
 		return zipEntry;
+	}
+
+	public void tearDown() {
+		JavaClasspath.reset();
 	}
 }
