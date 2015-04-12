@@ -22,17 +22,16 @@ import junit.framework.Test;
 import org.eclipse.core.runtime.CoreException;
 
 /**
- * Uses JaMoPP to parse and print the source files of
- * the Xerces XML parser.
+ * Uses JaMoPP to parse and print the source files of the Xerces XML parser.
  */
 public class XercesTest extends AbstractZipFileInputTestCase {
 
 	public static final String TEST_FOLDER = "Xerces-J-2.9.1";
 	public static final String START_ENTRY = "";
-	public static final int    THREAD_NO   = 8;
-	
+	public static final int THREAD_NO = 8;
+
 	public static Test suite() throws CoreException, IOException {
 		return constructSuite(TEST_FOLDER, START_ENTRY, THREAD_NO);
 	}
-	
+
 }

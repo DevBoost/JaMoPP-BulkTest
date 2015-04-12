@@ -31,7 +31,7 @@ public class DelegatingTestCase extends TestCase {
 	protected void runTest() throws Throwable {
 		zipFileEntryTestCase.runTest();
 	}
-	
+
 	@Override
 	protected void tearDown() throws Exception {
 		zipFileEntryTestCase.tearDown();

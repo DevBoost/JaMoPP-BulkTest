@@ -22,17 +22,16 @@ import junit.framework.Test;
 import org.eclipse.core.runtime.CoreException;
 
 /**
- * Uses JaMoPP to parse and print the source files of
- * Google Web Toolkit (GWT).
+ * Uses JaMoPP to parse and print the source files of Google Web Toolkit (GWT).
  */
 public class GWTTest extends AbstractZipFileInputTestCase {
 
 	public static final String TEST_FOLDER = "gwt-1.5.3";
 	public static final String START_ENTRY = "";
-	public static final int    THREAD_NO   = 8;
-	
+	public static final int THREAD_NO = 8;
+
 	public static Test suite() throws CoreException, IOException {
 		return constructSuite(TEST_FOLDER, START_ENTRY, THREAD_NO);
 	}
-	
+
 }

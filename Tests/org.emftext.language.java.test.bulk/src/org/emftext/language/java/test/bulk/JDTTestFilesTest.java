@@ -22,17 +22,16 @@ import junit.framework.Test;
 import org.eclipse.core.runtime.CoreException;
 
 /**
- * Uses JaMoPP to parse and print the test sources that are
- * used by the JDT to test the JDT compiler.
+ * Uses JaMoPP to parse and print the test sources that are used by the JDT to test the JDT compiler.
  */
 public class JDTTestFilesTest extends AbstractZipFileInputTestCase {
 
 	public static final String TEST_FOLDER = "jdt_test_files";
 	public static final String START_ENTRY = "";
-	public static final int    THREAD_NO   = 8;
-	
+	public static final int THREAD_NO = 8;
+
 	public static Test suite() throws CoreException, IOException {
 		return constructSuite(TEST_FOLDER, START_ENTRY, THREAD_NO, new String[] {}, true);
 	}
-	
+
 }

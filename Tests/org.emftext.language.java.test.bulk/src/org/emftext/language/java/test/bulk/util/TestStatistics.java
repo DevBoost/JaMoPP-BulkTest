@@ -30,11 +30,10 @@ import org.eclipse.emf.ecore.resource.impl.ExtensibleURIConverterImpl;
 import org.emftext.language.java.test.bulk.AbstractZipFileInputTestCase;
 
 /**
- * A utility class to extract statistical information from the test
- * sources (e.g., the total number of lines of code).
+ * A utility class to extract statistical information from the test sources (e.g., the total number of lines of code).
  */
 public class TestStatistics extends AbstractZipFileInputTestCase {
-	
+
 	private long locs = 0;
 	private long ncss = 0;
 	private long count = 0;
@@ -70,7 +69,7 @@ public class TestStatistics extends AbstractZipFileInputTestCase {
 			content.append((char) read);
 		}
 		is.close();
-		
+
 		Javancss jn = new Javancss(new java.io.StringBufferInputStream(content.toString()));
 		ncss += jn.getNcss();
 		locs += jn.getLOC();
@@ -78,11 +77,9 @@ public class TestStatistics extends AbstractZipFileInputTestCase {
 		if (lastError != null) {
 			System.out.println("Error parsing " + next);
 		}
-/*
-		is = new BufferedInputStream(new ExtensibleURIConverterImpl().createInputStream(next), 1024*1024);
-		while (is.read() >= 0) {
-			bytes++;
-		}
-		is.close();*/
+		/*
+		 * is = new BufferedInputStream(new ExtensibleURIConverterImpl().createInputStream(next), 1024*1024); while
+		 * (is.read() >= 0) { bytes++; } is.close();
+		 */
 	}
 }

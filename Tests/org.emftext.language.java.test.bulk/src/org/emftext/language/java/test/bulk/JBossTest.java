@@ -22,17 +22,16 @@ import junit.framework.Test;
 import org.eclipse.core.runtime.CoreException;
 
 /**
- * Uses JaMoPP to parse and print the source files of
- * the JBoss Application Server.
+ * Uses JaMoPP to parse and print the source files of the JBoss Application Server.
  */
 public class JBossTest extends AbstractZipFileInputTestCase {
-	
+
 	public static final String TEST_FOLDER = "jboss-5.0.0.GA";
 	public static final String START_ENTRY = "";
-	public static final int    THREAD_NO   = 8;
-	
+	public static final int THREAD_NO = 8;
+
 	public static Test suite() throws CoreException, IOException {
 		return constructSuite(TEST_FOLDER, START_ENTRY, THREAD_NO);
 	}
-	
+
 }

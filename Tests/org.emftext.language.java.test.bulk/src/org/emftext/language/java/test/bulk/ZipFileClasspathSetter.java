@@ -25,7 +25,7 @@ import org.emftext.language.java.JavaClasspath;
 import org.emftext.language.java.JavaClasspath.Initializer;
 
 public class ZipFileClasspathSetter implements IClasspathSetter {
-	
+
 	private final ZipFile zipFile;
 
 	public ZipFileClasspathSetter(ZipFile zipFile) {

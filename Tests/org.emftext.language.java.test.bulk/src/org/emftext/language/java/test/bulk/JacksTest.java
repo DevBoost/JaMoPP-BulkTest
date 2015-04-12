@@ -22,17 +22,16 @@ import junit.framework.Test;
 import org.eclipse.core.runtime.CoreException;
 
 /**
- * Uses JaMoPP to parse and print the source files of
- * the JACKS compiler test suite.
+ * Uses JaMoPP to parse and print the source files of the JACKS compiler test suite.
  */
 public class JacksTest extends AbstractZipFileInputTestCase {
-	
+
 	public static final String TEST_FOLDER = "jacks_javac_1.6.0_07_passed";
 	public static final String START_ENTRY = "";
-	public static final int    THREAD_NO   = 8;
-	
+	public static final int THREAD_NO = 8;
+
 	public static Test suite() throws CoreException, IOException {
 		return constructSuite(TEST_FOLDER, START_ENTRY, THREAD_NO);
 	}
-	
+
 }

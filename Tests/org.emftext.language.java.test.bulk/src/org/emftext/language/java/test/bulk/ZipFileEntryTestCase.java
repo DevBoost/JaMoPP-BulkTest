@@ -55,20 +55,16 @@ public class ZipFileEntryTestCase extends AbstractJavaParserTestCase {
 		this.zipEntry = zipEntry;
 		this.classpathSetter = classpathSetter;
 	}
-	
+
 	public void runTest() {
 		try {
 			if (isExcludedFromReprintTest(zipFile.getName())) {
 				parseAllEntries();
-			}
-			else {
+			} else {
 				/*
-				// if there is more entries that must be printed
-				// together we have to parse them before
-				if (entries.size() > 1) {
-					parseAllEntries();
-				}
-				*/
+				 * // if there is more entries that must be printed // together we have to parse them before if
+				 * (entries.size() > 1) { parseAllEntries(); }
+				 */
 				parseAndReprintAllEntries();
 			}
 		} catch (Exception e) {
@@ -76,7 +72,7 @@ public class ZipFileEntryTestCase extends AbstractJavaParserTestCase {
 			fail(e.getClass() + ": " + e.getMessage());
 		}
 	}
-	
+
 	@Override
 	protected Map<Object, Object> getLoadOptions() {
 		Map<Object, Object> map = new LinkedHashMap<Object, Object>();
@@ -86,7 +82,7 @@ public class ZipFileEntryTestCase extends AbstractJavaParserTestCase {
 		map.put(IJavaOptions.DISABLE_LAYOUT_INFORMATION_RECORDING, Boolean.TRUE);
 		return map;
 	}
-	
+
 	protected void setUpClasspath(ResourceSet resourceSet) throws Exception {
 		// Sub class can override this method
 		if (classpathSetter != null) {
@@ -96,8 +92,9 @@ public class ZipFileEntryTestCase extends AbstractJavaParserTestCase {
 
 	private void parseAndReprintEntry(ZipEntry entry) throws Exception {
 		String plainZipFileName = zipFile.getName().substring(AbstractZipFileInputTestCase.BULK_INPUT_DIR.length());
-		plainZipFileName = plainZipFileName.substring(0, plainZipFileName.length() - File.separator.length() - "src.zip".length());
-		
+		plainZipFileName = plainZipFileName.substring(0, plainZipFileName.length() - File.separator.length()
+				- "src.zip".length());
+
 		parseAndReprint(zipFile, entry, "output/" + plainZipFileName, "input/" + plainZipFileName);
 	}
 
@@ -108,12 +105,12 @@ public class ZipFileEntryTestCase extends AbstractJavaParserTestCase {
 	private void parseAndReprintAllEntries() throws Exception {
 		parseAndReprintEntry(zipEntry);
 	}
-	
+
 	@Override
 	protected boolean isExcludedFromReprintTest(String filename) {
 		return excludeFromReprint;
 	}
-	
+
 	@Override
 	protected boolean ignoreSemanticErrors(String filename) {
 		return excludeFromReprint;
@@ -123,12 +120,12 @@ public class ZipFileEntryTestCase extends AbstractJavaParserTestCase {
 	protected String getTestInputFolder() {
 		return null;
 	}
-	
+
 	@Override
 	protected boolean prefixUsedInZipFile() {
 		return prefixUsedInZipFile;
 	}
-	
+
 	@Override
 	public void addParsedResource(File file) {
 		// do nothing to avoid storing unneeded file objects in memory
